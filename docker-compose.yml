@@ -5,38 +5,38 @@ networks:
     driver: bridge
 
 services:
-  # zookeeper:
-  #   image: 'bitnami/zookeeper:latest'
-  #   ports:
-  #     - '2181:2181'
-  #   environment:
-  #     ALLOW_ANONYMOUS_LOGIN: 'yes'
-  #   networks:
-  #     - app-tier
-  #   restart: unless-stopped
-  # kafka:
-  #   image: 'bitnami/kafka:latest'
-  #   ports:
-  #     - '9092'
-  #   environment:
-  #     DOCKER_API_VERSION: 1.22
-  #     KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     ALLOW_PLAINTEXT_LISTENER: 'yes'
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   networks:
-  #     - app-tier
-  #   restart: unless-stopped
   db:
     image: postgres
     restart: always
     ports:
-      - "5444:5432"
+      - '5444:5432'
     environment:
       POSTGRES_PASSWORD: dev
       POSTGRES_USER: dev
       POSTGRES_DB: dev
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: 'yes'
+    networks:
+      - app-tier
+    restart: unless-stopped
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092'
+    environment:
+      DOCKER_API_VERSION: 1.22
+      # KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-tier
+    restart: unless-stopped
   # uploader:
   #   image: 'uploader'
   #   networks:
