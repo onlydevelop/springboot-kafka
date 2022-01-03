@@ -26,12 +26,17 @@ services:
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
-      - '9092'
+      - '9092:9092'
+      - '9093:9093'
     environment:
       DOCKER_API_VERSION: 1.22
-      # KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+      # KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       ALLOW_PLAINTEXT_LISTENER: 'yes'
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_CFG_LISTENERS: 'CLIENT://:9092,EXTERNAL://:9093'
+      KAFKA_CFG_ADVERTISED_LISTENERS: 'CLIENT://kafka:9092,EXTERNAL://localhost:9093'
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'CLIENT'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
