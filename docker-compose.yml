@@ -1,8 +1,7 @@
-version: '2'
+version: '2.4'
 
 networks:
   app-tier:
-    driver: bridge
 
 services:
   db:
@@ -14,6 +13,8 @@ services:
       POSTGRES_PASSWORD: dev
       POSTGRES_USER: dev
       POSTGRES_DB: dev
+    networks:
+      - app-tier
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
@@ -30,7 +31,6 @@ services:
       - '9093:9093'
     environment:
       DOCKER_API_VERSION: 1.22
-      # KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       ALLOW_PLAINTEXT_LISTENER: 'yes'
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT'
@@ -39,18 +39,24 @@ services:
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'CLIENT'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
     networks:
       - app-tier
     restart: unless-stopped
-  # uploader:
-  #   image: 'uploader'
-  #   networks:
-  #     - app-tier
-  # parser:
-  #   image: 'parser'
-  #   networks:
-  #     - app-tier
-  # frontend:
-  #   image: 'frontend'
-  #   networks:
-  #     - app-tier
+  uploader:
+    image: uploader
+    ports:
+      - 9090:8080
+    networks:
+      - app-tier
+    depends_on:
+      - db
+      - kafka
+  parser:
+    image: parser
+    networks:
+      - app-tier
+    depends_on:
+      - db
+      - kafka
