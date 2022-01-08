@@ -44,19 +44,25 @@ services:
     networks:
       - app-tier
     restart: unless-stopped
-  uploader:
-    image: uploader
-    ports:
-      - 9090:8080
-    networks:
-      - app-tier
-    depends_on:
-      - db
-      - kafka
-  parser:
-    image: parser
-    networks:
-      - app-tier
-    depends_on:
-      - db
-      - kafka
+ filestore:
+   image: filestore
+   networks:
+     - app-tier
+   depends_on:
+     - db
+ uploader:
+   image: uploader
+   ports:
+     - 9090:8080
+   networks:
+     - app-tier
+   depends_on:
+     - db
+     - kafka
+ parser:
+   image: parser
+   networks:
+     - app-tier
+   depends_on:
+     - db
+     - kafka
