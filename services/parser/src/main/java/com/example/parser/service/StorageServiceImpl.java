@@ -1,6 +1,6 @@
 package com.example.parser.service;
 
-import com.example.parser.model.FileMetadata;
+import com.example.parser.model.FileParserMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
@@ -34,8 +34,8 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public FileMetadata store(MultipartFile file) throws IOException {
-        FileMetadata fileMetadata = new FileMetadata();
+    public FileParserMetadata store(MultipartFile file) throws IOException {
+        FileParserMetadata fileMetadata = new FileParserMetadata();
         try {
             if (file.isEmpty()) {
                 throw new IOException("Failed to store empty file.");

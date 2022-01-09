@@ -6,11 +6,14 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "FileMetadata")
-public class FileMetadata {
+@Table(name = "FileParserMetadata")
+public class FileParserMetadata {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @Column
+    private long fileStoreId;
 
     @Column
     private String name;
@@ -24,9 +27,9 @@ public class FileMetadata {
     @Column
     private Integer wordCount;
 
-    public FileMetadata() {}
+    public FileParserMetadata() {}
 
-    public FileMetadata(String name) {
+    public FileParserMetadata(String name) {
         this.name = name;
     }
 }

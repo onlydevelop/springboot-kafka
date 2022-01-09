@@ -1,13 +1,14 @@
 package com.example.uploader.controller;
 
-import com.example.uploader.model.FileMetadata;
+import com.example.uploader.model.FileParserMetadata;
 import com.example.uploader.repository.UploaderRepository;
 import com.example.uploader.service.ProducerService;
-import com.example.uploader.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -21,20 +22,25 @@ public class UploaderController {
     @Autowired
     UploaderRepository uploaderRepository;
 
-    private final StorageService storageService;
     private final ProducerService producerService;
 
     @Autowired
-    public UploaderController(StorageService storageService, ProducerService producerService) {
-        this.storageService = storageService;
+    public UploaderController(ProducerService producerService) {
         this.producerService = producerService;
     }
 
     @PostMapping
     public ResponseEntity<HttpStatus> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            FileMetadata fileMetadata = storageService.store(file);
-            FileMetadata savedMetadata = uploaderRepository.save(fileMetadata);
+            String uri = "http://filestore/api/v1/files"; // TODO: make it right
+            RestTemplate template = new RestTemplate();
+            URI fileStoreLocation = template.postForLocation(uri, file);
+            FileParserMetadata fileStoreMetadata = template.getForEntity(fileStoreLocation, FileParserMetadata.class).getBody();
+            FileParserMetadata fileParserMetadata = new FileParserMetadata();
+            fileParserMetadata.setFileStoreId(fileStoreMetadata.getId());
+            fileParserMetadata.setName(fileStoreMetadata.getName());
+            fileParserMetadata.setUuid(fileStoreMetadata.getUuid());
+            FileParserMetadata savedMetadata = uploaderRepository.save(fileStoreMetadata);
 
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
@@ -50,8 +56,8 @@ public class UploaderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FileMetadata> get(@PathVariable("id") Long id) {
-        Optional<FileMetadata> fileMetadata = uploaderRepository.findById(id);
+    public ResponseEntity<FileParserMetadata> get(@PathVariable("id") Long id) {
+        Optional<FileParserMetadata> fileMetadata = uploaderRepository.findById(id);
 
         if (fileMetadata.isPresent()) {
             return new ResponseEntity<>(fileMetadata.get(), HttpStatus.OK);
