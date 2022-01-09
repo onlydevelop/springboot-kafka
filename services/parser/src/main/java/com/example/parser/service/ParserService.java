@@ -3,6 +3,7 @@ package com.example.parser.service;
 import com.example.parser.model.FileParserMetadata;
 import com.example.parser.repository.ParserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 @Service
 public class ParserService {
+
+    @Value( "${fileStoreServer}" )
+    private String fileStoreServer;
 
     @Autowired
     ParserRepository parserRepository;
@@ -34,7 +38,7 @@ public class ParserService {
     }
 
     private void parseFile(FileParserMetadata fileParserMetadata) throws FileNotFoundException {
-        String url = "http://filestore/api/v1/files/" + fileParserMetadata.getFileStoreId() + "/download";
+        String url = "http://" + fileStoreServer + "/api/v1/files/" + fileParserMetadata.getFileStoreId() + "/download";
         File tempFile = null;
         try {
             tempFile = File.createTempFile("parser-", ".parse");
