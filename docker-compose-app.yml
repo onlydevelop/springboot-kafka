@@ -46,12 +46,16 @@ services:
     restart: unless-stopped
   filestore:
     image: filestore
+    environment:
+      spring.profiles.active: docker
     networks:
       - app-tier
     depends_on:
       - db
   uploader:
     image: uploader
+    environment:
+      spring.profiles.active: docker
     ports:
       - 9090:8080
     networks:
@@ -59,10 +63,15 @@ services:
     depends_on:
       - db
       - kafka
+      - filestore
   parser:
     image: parser
+    environment:
+      spring.profiles.active: docker
     networks:
       - app-tier
     depends_on:
       - db
       - kafka
+      - filestore
+      - uploader

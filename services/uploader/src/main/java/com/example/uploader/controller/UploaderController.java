@@ -10,7 +10,6 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,8 +18,6 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -42,11 +39,12 @@ public class UploaderController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
+        Path tempFile = null;
         try {
+            tempFile = Files.createTempFile(null, null);
             String uri = "http://" + fileStoreServer + "/api/v1/files";
             RestTemplate restTemplate = new RestTemplate();
 
-            Path tempFile = Files.createTempFile(null, null);
             Files.write(tempFile, multipartFile.getBytes());
             File fileToSend = tempFile.toFile();
 
@@ -62,9 +60,9 @@ public class UploaderController {
             FileParserMetadata fileStoreMetadata = restTemplate.getForEntity(fileStoreLocation, FileParserMetadata.class).getBody();
             FileParserMetadata fileParserMetadata = new FileParserMetadata();
             fileParserMetadata.setFileStoreId(fileStoreMetadata.getId());
-            fileParserMetadata.setName(fileStoreMetadata.getName());
+            fileParserMetadata.setName(multipartFile.getOriginalFilename());
             fileParserMetadata.setUuid(fileStoreMetadata.getUuid());
-            FileParserMetadata savedMetadata = uploaderRepository.save(fileStoreMetadata);
+            FileParserMetadata savedMetadata = uploaderRepository.save(fileParserMetadata);
 
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
@@ -76,6 +74,10 @@ public class UploaderController {
             return ResponseEntity.created(location).build();
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            if (tempFile != null) {
+                tempFile.toFile().delete();
+            }
         }
     }
 
