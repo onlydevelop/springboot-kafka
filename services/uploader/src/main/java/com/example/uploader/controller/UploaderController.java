@@ -4,6 +4,7 @@ import com.example.uploader.model.FileParserMetadata;
 import com.example.uploader.repository.UploaderRepository;
 import com.example.uploader.service.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ import java.util.Optional;
 @RequestMapping("/api/v1/files")
 public class UploaderController {
 
+    @Value( "${fileStoreServer}" )
+    private String fileStoreServer;
+
     @Autowired
     UploaderRepository uploaderRepository;
 
@@ -32,7 +36,7 @@ public class UploaderController {
     @PostMapping
     public ResponseEntity<HttpStatus> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            String uri = "http://filestore/api/v1/files"; // TODO: make it right
+            String uri = "http://" + fileStoreServer + "/api/v1/files";
             RestTemplate template = new RestTemplate();
             URI fileStoreLocation = template.postForLocation(uri, file);
             FileParserMetadata fileStoreMetadata = template.getForEntity(fileStoreLocation, FileParserMetadata.class).getBody();
