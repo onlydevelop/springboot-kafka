@@ -1,14 +1,14 @@
 depup:
-	kubectl apply -f k8s/dependencies.yaml
+	minikube kubectl -- apply -f k8s/dependencies.yml
 depdown:
-	kubectl delete -f k8s/dependencies.yaml
+	minikube kubectl -- delete -f k8s/dependencies.yml
 appup:
-	kubectl apply -f k8s/app.yaml
+	minikube kubectl -- apply -f k8s/app.yml
 appdown:
-	kubectl delete -f k8s/app.yaml
+	minikube kubectl -- delete -f k8s/app.yml
 allup:
-	kubectl apply -f k8s/dependencies.yaml
-	kubectl apply -f k8s/app.yaml
+	minikube kubectl -- apply -f k8s/dependencies.yml
+	minikube kubectl -- apply -f k8s/app.yml
 alldown:
-	kubectl delete -f k8s/app.yaml
-	kubectl delete -f k8s/dependencies.yaml
+	minikube kubectl -- delete -f k8s/app.yml
+	minikube kubectl -- delete -f k8s/dependencies.yml

@@ -15,15 +15,27 @@ spec:
         app: filestore
     spec:
       containers:
-      - name: filestore
-        image: filestore
-        ports:
-        - containerPort: 8080
-        env:
-        - name: spring.profiles.active
-          value: "docker"
-
---
+        - name: filestore
+          image: filestore:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.profiles.active
+              value: 'docker'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filestore
+spec:
+  selector:
+    app: filestore
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -41,14 +53,28 @@ spec:
         app: uploader
     spec:
       containers:
-      - name: uploader
-        image: uploader
-        ports:
-        - containerPort: 8080
-        env:
-        - name: spring.profiles.active
-          value: "docker"
---
+        - name: uploader
+          image: uploader:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.profiles.active
+              value: 'docker'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uploader
+spec:
+  selector:
+    app: uploader
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8080
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -66,10 +92,23 @@ spec:
         app: parser
     spec:
       containers:
-      - name: parser
-        image: parser
-        ports:
-        - containerPort: 8080
-        env:
-        - name: spring.profiles.active
-          value: "docker"
+        - name: parser
+          image: parser:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: spring.profiles.active
+              value: 'docker'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parser
+spec:
+  selector:
+    app: parser
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
