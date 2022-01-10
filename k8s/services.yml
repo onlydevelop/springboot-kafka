@@ -1,0 +1,75 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: filestore-deployment
+  labels:
+    app: filestore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filestore
+  template:
+    metadata:
+      labels:
+        app: filestore
+    spec:
+      containers:
+      - name: filestore
+        image: filestore
+        ports:
+        - containerPort: 8080
+        env:
+        - name: spring.profiles.active
+          value: "docker"
+
+--
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: uploader-deployment
+  labels:
+    app: uploader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uploader
+  template:
+    metadata:
+      labels:
+        app: uploader
+    spec:
+      containers:
+      - name: uploader
+        image: uploader
+        ports:
+        - containerPort: 8080
+        env:
+        - name: spring.profiles.active
+          value: "docker"
+--
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: parser-deployment
+  labels:
+    app: parser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parser
+  template:
+    metadata:
+      labels:
+        app: parser
+    spec:
+      containers:
+      - name: parser
+        image: parser
+        ports:
+        - containerPort: 8080
+        env:
+        - name: spring.profiles.active
+          value: "docker"
