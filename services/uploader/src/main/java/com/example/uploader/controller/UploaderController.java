@@ -73,6 +73,7 @@ public class UploaderController {
             producerService.sendMessage(String.valueOf(savedMetadata.getId()));
             return ResponseEntity.created(location).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             if (tempFile != null) {
