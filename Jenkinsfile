@@ -1,8 +1,9 @@
 pipeline {
     stages {
         stage('Checkout') {
-            steps { //Checking out the repo
-                checkout
+            steps {
+                git branch: 'citest',
+                    url: 'https://github.com/onlydevelop/springboot-kafka.git'
             }
         }
         stage('Build: filestorage') {   
