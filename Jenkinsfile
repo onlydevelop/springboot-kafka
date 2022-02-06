@@ -8,17 +8,43 @@ pipeline {
             }
         }
         stage('Build') {   
-            steps {
-                step {
-                    script {
-                        try {
-                            sh 'cd services/filestore && ./gradlew clean build --no-daemon'
-                        } finally {
-                            //junit '**/build/test-results/test/*.xml' //make the junit test results available in any case (success & failure)
+            parallel {
+                stage('filestore') {
+                    agent any
+                    steps {
+                        script {    
+                            try {
+                                sh 'cd services/filestore && ./gradlew clean build --no-daemon'
+                            } finally {
+                                //junit '**/build/test-results/test/*.xml'
+                            }
                         }
                     }
                 }
-                
+                stage('parser') {
+                    agent any
+                    steps {
+                        script {    
+                            try {
+                                sh 'cd services/parser && ./gradlew clean build --no-daemon'
+                            } finally {
+                                //junit '**/build/test-results/test/*.xml'
+                            }
+                        }
+                    }
+                }
+                stage('uploader') {
+                    agent any
+                    steps {
+                        script {    
+                            try {
+                                sh 'cd services/uploader && ./gradlew clean build --no-daemon'
+                            } finally {
+                                //junit '**/build/test-results/test/*.xml'
+                            }
+                        }
+                    }
+                }
             }
         }
     }
