@@ -7,7 +7,18 @@ pipeline {
                     url: 'https://github.com/onlydevelop/springboot-kafka.git'
             }
         }
-        stage('filestore') {
+        stage('filestore: test') {
+            steps {
+                script {    
+                    try {
+                        sh 'cd services/filestore && ./gradlew clean test --no-daemon'
+                    } finally {
+                        //junit '**/build/test-results/test/*.xml'
+                    }
+                }
+            }
+        }
+        stage('filestore: build') {
             steps {
                 script {    
                     try {
