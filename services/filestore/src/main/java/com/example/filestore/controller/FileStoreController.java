@@ -21,14 +21,13 @@ import java.util.Optional;
 @RequestMapping("/api/v1/files")
 public class FileStoreController {
 
-    @Autowired
-    FileStoreRepository filestoreRepository;
-
+    private final FileStoreRepository filestoreRepository;
     private final StorageService storageService;
 
     @Autowired
-    public FileStoreController(StorageService storageService) {
+    public FileStoreController(StorageService storageService, FileStoreRepository filestoreRepository) {
         this.storageService = storageService;
+        this.filestoreRepository = filestoreRepository;
     }
 
     @PostMapping
@@ -70,15 +69,19 @@ public class FileStoreController {
             InputStream myStream = storageService.load(uuid);
             if (myStream == null) return;
 
-            response.addHeader("Content-disposition", "attachment;filename=myfilename.txt");
+            response.addHeader("Content-disposition", "attachment;filename=" + fileMetadata.get().getName());
             response.setContentType("txt/plain");
 
             try {
-                IOUtils.copy(myStream, response.getOutputStream());
-                response.flushBuffer();
+                writeFileToResponse(myStream, response);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    protected void writeFileToResponse(InputStream inputStream, HttpServletResponse response) throws IOException {
+        IOUtils.copy(inputStream, response.getOutputStream());
+        response.flushBuffer();
     }
 }
