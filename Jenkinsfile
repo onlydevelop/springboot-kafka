@@ -11,7 +11,8 @@ pipeline {
             steps {
                 script {
                     try {
-                        cd services/filestorage
+                        sh 'pwd'
+                        sh 'cd ./services/filestorage'
                         sh './gradlew clean build --no-daemon' //run a gradle task
 
                     } finally {
