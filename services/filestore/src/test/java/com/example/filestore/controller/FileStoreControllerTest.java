@@ -4,6 +4,7 @@ import com.example.filestore.model.FileStoreMetadata;
 import com.example.filestore.repository.FileStoreRepository;
 import com.example.filestore.service.StorageService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DisplayName("FileStore: Controller")
 public class FileStoreControllerTest {
     static class TestableFileStoreController extends FileStoreController {
         public TestableFileStoreController(StorageService storageService, FileStoreRepository filestoreRepository) {
